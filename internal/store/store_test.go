@@ -56,8 +56,8 @@ func TestOpenMigrateSeed(t *testing.T) {
 }
 
 func TestOpenInvalidPath(t *testing.T) {
-	// 非法路径应返回错误而不是 panic
-	if _, err := Open(`\\\\invalid\\path\\x.db`); err == nil {
+	// 跨平台：不存在目录下的路径无法建库（Windows/Linux 行为一致）
+	if _, err := Open(filepath.Join(t.TempDir(), "no", "such", "dir", "x.db")); err == nil {
 		t.Fatal("非法路径应报错")
 	}
 }
