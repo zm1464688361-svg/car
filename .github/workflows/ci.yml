@@ -22,7 +22,6 @@ jobs:
       - name: Publish failure details
         if: failure()
         run: |
-          {
-            echo "## CI 失败详情"
-            grep -E -- "--- FAIL|FAIL|panic:|WARNING: DATA RACE|ok  " test.log || true
-          } >> "$GITHUB_STEP_SUMMARY"
+          grep -E -- "--- FAIL|^FAIL|panic:|WARNING: DATA RACE|_test\.go:[0-9]+:" test.log | head -8 | while IFS= read -r line; do
+            echo "::error title=CI-Failure::$line"
+          done
