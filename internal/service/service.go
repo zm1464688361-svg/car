@@ -841,6 +841,7 @@ func saveReceipt(t *sql.Tx, r *model.Receipt) error {
 	r.ID, _ = res.LastInsertId()
 	return nil
 }
+
 // MarkTimeouts 超时判定：发布超过 Timeout 无有效回执 → timeout（R6）。
 // 试点超时同时把活动置为 pilot_paused。幂等：已是终态的不处理。
 func (s *Service) MarkTimeouts() (int, error) {
@@ -856,8 +857,8 @@ func (s *Service) MarkTimeouts() (int, error) {
 			return err
 		}
 		type item struct {
-			id, actID   int64
-			batch, aSt  string
+			id, actID  int64
+			batch, aSt string
 		}
 		var items []item
 		for rows.Next() {

@@ -187,8 +187,8 @@ func TestVehicleAPI(t *testing.T) {
 		t.Fatal(err)
 	}
 	var pull struct {
-		Version        int    `json:"version"`
-		TargetInterval int    `json:"target_interval"`
+		Version        int `json:"version"`
+		TargetInterval int `json:"target_interval"`
 	}
 	b, _ := io.ReadAll(resp2.Body)
 	resp2.Body.Close()

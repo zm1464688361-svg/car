@@ -110,12 +110,12 @@ func (s *Server) handleApprover(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	s.render(w, r, "approver.html", "审批核查 · 车队日志策略发布平台", map[string]any{
-		"Submitted":    submitted,
-		"Paused":       paused,
-		"Expanding":    expanding,
-		"RestoreReq":   restoreReq,
-		"Restoring":    restoring,
-		"Activities":   acts,
+		"Submitted":  submitted,
+		"Paused":     paused,
+		"Expanding":  expanding,
+		"RestoreReq": restoreReq,
+		"Restoring":  restoring,
+		"Activities": acts,
 	}, http.StatusOK)
 }
 

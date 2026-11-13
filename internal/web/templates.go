@@ -59,11 +59,11 @@ func (s *Server) loadTemplates() error {
 
 // render 渲染页面；data 必须包含 User（可为 nil）、Flash、Nav。
 type pageData struct {
-	User      *model.User
-	Flash     flash
-	Title     string
-	Timeout   string
-	Data      map[string]any
+	User    *model.User
+	Flash   flash
+	Title   string
+	Timeout string
+	Data    map[string]any
 }
 
 func (s *Server) render(w http.ResponseWriter, r *http.Request, page string, title string, data map[string]any, status int) {

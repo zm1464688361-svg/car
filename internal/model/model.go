@@ -30,19 +30,19 @@ func (r Role) Label() string {
 
 // 活动状态机。
 const (
-	ActDraft             = "draft"              // 草稿/被退回，可修改再提交
-	ActSubmitted         = "submitted"          // 待审批
-	ActRejected          = "rejected"           // 已退回
-	ActApproved          = "approved"           // 已批准，待发起试点
-	ActPiloting          = "piloting"           // 试点已下发
-	ActPilotPaused       = "pilot_paused"       // 试点失败/超时，暂停推进
-	ActExpanding         = "expanding"          // 已确认推广，剩余车辆下发中
-	ActStopped           = "stopped"            // 已停止（保留已发/未发范围）
-	ActCompleted         = "completed"          // 全部目标车辆成功，负责人记完成
-	ActRestoreRequested  = "restore_requested"  // 运营发起恢复，待批准
-	ActRestoreApproved   = "restore_approved"   // 负责人已批准恢复
-	ActRestoring         = "restoring"          // 恢复下发中
-	ActRestored          = "restored"           // 恢复完成
+	ActDraft            = "draft"             // 草稿/被退回，可修改再提交
+	ActSubmitted        = "submitted"         // 待审批
+	ActRejected         = "rejected"          // 已退回
+	ActApproved         = "approved"          // 已批准，待发起试点
+	ActPiloting         = "piloting"          // 试点已下发
+	ActPilotPaused      = "pilot_paused"      // 试点失败/超时，暂停推进
+	ActExpanding        = "expanding"         // 已确认推广，剩余车辆下发中
+	ActStopped          = "stopped"           // 已停止（保留已发/未发范围）
+	ActCompleted        = "completed"         // 全部目标车辆成功，负责人记完成
+	ActRestoreRequested = "restore_requested" // 运营发起恢复，待批准
+	ActRestoreApproved  = "restore_approved"  // 负责人已批准恢复
+	ActRestoring        = "restoring"         // 恢复下发中
+	ActRestored         = "restored"          // 恢复完成
 )
 
 // 车辆下发记录状态。
@@ -68,11 +68,11 @@ const (
 
 // 间隔边界与默认值。
 const (
-	IntervalMin      = 10
-	IntervalMax      = 300
-	IntervalDefault  = 60
-	PilotCount       = 2 // 试点固定两台
-	FleetSize        = 5 // 车队固定五台
+	IntervalMin     = 10
+	IntervalMax     = 300
+	IntervalDefault = 60
+	PilotCount      = 2 // 试点固定两台
+	FleetSize       = 5 // 车队固定五台
 )
 
 // User 预置账号。
@@ -110,18 +110,18 @@ type Activity struct {
 
 // Publish 单车单版本下发记录：期望值=target，生效值在 Vehicle 上。
 type Publish struct {
-	ID          int64      `json:"id"`
-	ActivityID  int64      `json:"activity_id"`
-	VehicleID   string     `json:"vehicle_id"`
-	Version     int        `json:"version"`
-	Target      int        `json:"target"` // 期望间隔
-	Batch       string     `json:"batch"`
-	Status      string     `json:"status"`
-	PublishedAt string     `json:"published_at"`
-	AckAt       *string    `json:"ack_at"`
-	FailReason  *string    `json:"fail_reason"`
-	TimeoutAt   *string    `json:"timeout_at"` // 超时历史（迟到成功后保留）
-	Late        bool       `json:"late"`       // 超时后迟到成功
+	ID          int64   `json:"id"`
+	ActivityID  int64   `json:"activity_id"`
+	VehicleID   string  `json:"vehicle_id"`
+	Version     int     `json:"version"`
+	Target      int     `json:"target"` // 期望间隔
+	Batch       string  `json:"batch"`
+	Status      string  `json:"status"`
+	PublishedAt string  `json:"published_at"`
+	AckAt       *string `json:"ack_at"`
+	FailReason  *string `json:"fail_reason"`
+	TimeoutAt   *string `json:"timeout_at"` // 超时历史（迟到成功后保留）
+	Late        bool    `json:"late"`       // 超时后迟到成功
 }
 
 // Receipt 车端回执/拒绝记录（含被拒绝的非法回执，供诊断）。
