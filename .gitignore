@@ -1,0 +1,6 @@
+# 临时产物
+*.db
+data.db
+cover.out
+cover2*
+*.exe

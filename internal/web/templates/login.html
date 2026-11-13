@@ -1,0 +1,21 @@
+{{define "content"}}
+<section class="login-hero">
+  <h1>测试车队<span class="hl">日志策略</span>发布</h1>
+  <p class="sub">研发申请 → 负责人审批 → 试点 2 台 → 确认推广 3 台 → 逐车核查 → 停止/恢复</p>
+</section>
+<section class="card-grid">
+  {{range .Data.Users}}
+  <form method="post" action="/login" class="card user-card">
+    <input type="hidden" name="uid" value="{{.ID}}">
+    <div class="user-name">{{.Name}}</div>
+    <div class="role-chip role-{{.Role}}">{{roleLabel .Role}}</div>
+    <p class="user-desc">
+      {{if eq (printf "%s" .Role) "applicant"}}提交日志间隔调整申请，跟进退回原因{{end}}
+      {{if eq (printf "%s" .Role) "approver"}}批准/退回申请，核查试点与整体结果{{end}}
+      {{if eq (printf "%s" .Role) "operator"}}发起试点、确认推广、停止活动、执行恢复{{end}}
+    </p>
+    <button class="btn primary" type="submit">以此身份进入</button>
+  </form>
+  {{end}}
+</section>
+{{end}}
