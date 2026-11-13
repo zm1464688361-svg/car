@@ -32,7 +32,8 @@ func TestBuildHandler(t *testing.T) {
 }
 
 func TestBuildHandlerInvalidPath(t *testing.T) {
-	if _, _, _, err := buildHandler(`\\\\invalid\\x\\y.db`, "s"); err == nil {
+	// 跨平台：指向不存在目录的路径，Windows/Linux 均无法打开数据库
+	if _, _, _, err := buildHandler(filepath.Join(t.TempDir(), "no", "such", "dir", "x.db"), "s"); err == nil {
 		t.Fatal("非法数据库路径应报错")
 	}
 }
