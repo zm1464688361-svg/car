@@ -11,4 +11,4 @@
 | T7 | 单元测试与覆盖率（service≥85%，store≥85%） | 第一部分§6 | T4/T5 | `go test -race -cover` 全绿 | ✅ |
 | T8 | 自编 Skill：业务约束检查、验收检查 | 第一部分§4 | T4 | skill 文件 + 使用记录 | ✅ |
 | T9 | CI 流水线（vet+fmt+test+cover 门禁）、Dockerfile | 第一部分§7 | T7 | 流水线可运行，失败不发布 | ✅ |
-| T10 | PR 到 main、门禁通过、合并后自动部署 | 第一部分§8 | T7-T9 | PR 记录 + 部署地址 + 冒烟结果 | ⏳ 待真实编号核验后执行 |
+| T10 | PR 到 main、门禁通过、合并后自动部署 | 第一部分§8 | T7-T9 | PR #1 已合并（8b0f150），CI 通过；部署方式为 Dockerfile（docker build/run），无公网部署地址（见 assumptions） | ✅ |
