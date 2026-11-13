@@ -1,0 +1,47 @@
+{{define "content"}}
+<h2>研发申请工作台</h2>
+
+<section class="panel">
+  <h3>{{if .Data.Edit}}修改被退回申请 #{{.Data.Edit.ID}}{{else}}新建日志策略申请{{end}}</h3>
+  {{if .Data.Edit}}
+  <p class="reject-note">退回原因：{{.Data.Edit.RejectReason}}</p>
+  {{end}}
+  <form method="post" action="{{if .Data.Edit}}/actions/update{{else}}/actions/create{{end}}" class="form-row">
+    {{if .Data.Edit}}<input type="hidden" name="id" value="{{.Data.Edit.ID}}">{{end}}
+    <label>排查原因<textarea name="reason" rows="2" required placeholder="例如：V3 车诊断码 P0xxx 需要提高日志频率定位">{{if .Data.Edit}}{{.Data.Edit.Reason}}{{end}}</textarea></label>
+    <label>日志上报间隔（10~300 秒）<input type="number" name="interval" min="10" max="300" required value="{{if .Data.Edit}}{{.Data.Edit.Interval}}{{else}}30{{end}}"></label>
+    <div class="btn-row">
+      <button class="btn primary" type="submit">{{if .Data.Edit}}保存修改{{else}}创建申请{{end}}</button>
+      {{if .Data.Edit}}
+      <button class="btn" type="submit" name="resubmit" value="1">保存并重新提交审批</button>
+      <a class="btn ghost" href="/applicant">取消</a>
+      {{end}}
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h3>我的申请</h3>
+  {{if not .Data.Activities}}<p class="empty">还没有申请。创建后会覆盖全部 5 台测试车。</p>{{end}}
+  {{range .Data.Activities}}
+  <article class="act-row">
+    <div class="act-head">
+      <span class="act-id">#{{.ID}}</span>
+      <span class="chip st-{{.Status}}">{{act .Status}}</span>
+      <span class="mono">目标 {{.Interval}}s</span>
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a>
+      {{if or (eq .Status "draft") (eq .Status "rejected")}}
+        {{if eq .Status "rejected"}}<a class="btn sm" href="/applicant?edit={{.ID}}">修改</a>{{end}}
+        <form method="post" action="/actions/submit" class="inline">
+          <input type="hidden" name="id" value="{{.ID}}">
+          <button class="btn primary sm" type="submit">提交审批</button>
+        </form>
+      {{end}}
+    </div>
+    <div class="act-reason">{{.Reason}}</div>
+    {{if .RejectReason}}<div class="reject-note">退回原因：{{.RejectReason}}</div>{{end}}
+    {{if .StopReason}}<div class="warn-note">停止原因：{{.StopReason}}</div>{{end}}
+  </article>
+  {{end}}
+</section>
+{{end}}

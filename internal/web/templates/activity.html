@@ -1,0 +1,76 @@
+{{define "content"}}
+{{$D := .Data.D}}
+<h2>活动核查 #{{$D.Activity.ID}} <span class="chip st-{{$D.Activity.Status}}">{{act $D.Activity.Status}}</span></h2>
+
+<section class="panel">
+  <div class="act-head">
+    <span class="mono">目标间隔 {{$D.Activity.Interval}}s</span>
+    {{if $D.Activity.RejectReason}}<span class="reject-note">退回原因：{{$D.Activity.RejectReason}}</span>{{end}}
+    {{if $D.Activity.StopReason}}<span class="warn-note">停止原因：{{$D.Activity.StopReason}}</span>{{end}}
+    <span>申请人 user:{{$D.Activity.ApplicantID}}</span>
+    {{if $D.Activity.ApproverID}}<span>审批人 user:{{$D.Activity.ApproverID}}</span>{{end}}
+  </div>
+  <div class="act-reason">{{$D.Activity.Reason}}</div>
+</section>
+
+<section class="panel">
+  <h3>逐车下发与生效（发布前值 / 期望值 / 已生效值）</h3>
+  <table class="tbl">
+    <thead><tr>
+      <th>车辆</th><th>批次</th><th>版本</th><th>发布前值</th><th>期望值</th><th>已生效值</th>
+      <th>下发状态</th><th>发布时间</th><th>回执时间</th><th>备注</th>
+    </tr></thead>
+    <tbody>
+      {{range $D.Publishes}}
+      {{$v := index $D.Vehicles .VehicleID}}
+      <tr class="st-{{.Status}}">
+        <td class="mono">{{.VehicleID}}</td>
+        <td>{{batch .Batch}}</td>
+        <td class="mono">v{{.Version}}</td>
+        <td class="mono">{{if $v.Baseline}}{{$v.Baseline}}s{{else}}-{{end}}</td>
+        <td class="mono">{{.Target}}s</td>
+        <td class="mono">{{if $v}}{{$v.CurrentInterval}}s{{end}}</td>
+        <td><span class="chip ps-{{.Status}}">{{pub .Status}}</span>{{if .Late}}<span class="chip late">迟到成功</span>{{end}}</td>
+        <td class="mono">{{timefmt .PublishedAt}}</td>
+        <td class="mono">{{if .AckAt}}{{timefmt .AckAt}}{{else}}-{{end}}</td>
+        <td class="small">{{if .FailReason}}{{.FailReason}}{{end}}{{if .TimeoutAt}}曾超时{{end}}</td>
+      </tr>
+      {{end}}
+      {{if not $D.Publishes}}<tr><td colspan="10" class="empty">尚未下发</td></tr>{{end}}
+    </tbody>
+  </table>
+  {{if $D.Activity.PilotIDs}}
+  <p class="small">试点车：{{range $D.Activity.PilotIDs}}<span class="chip pilot">{{.}}</span> {{end}}</p>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>回执与拒绝记录（含非法回执诊断）</h3>
+  <table class="tbl">
+    <thead><tr><th>车辆</th><th>版本</th><th>结果</th><th>处理</th><th>代码</th><th>说明</th><th>时间</th></tr></thead>
+    <tbody>
+      {{range $D.Receipts}}
+      <tr class="{{if .Accepted}}acc{{else}}rej{{end}}">
+        <td class="mono">{{.VehicleID}}</td><td class="mono">v{{.Version}}</td>
+        <td class="mono">{{.Result}}</td>
+        <td>{{if .Accepted}}<span class="chip ps-success">受理</span>{{else}}<span class="chip ps-failed">拒绝</span>{{end}}</td>
+        <td class="mono small">{{.Code}}</td>
+        <td class="small">{{.Note}}</td>
+        <td class="mono small">{{timefmt .At}}</td>
+      </tr>
+      {{end}}
+      {{if not $D.Receipts}}<tr><td colspan="7" class="empty">无回执记录</td></tr>{{end}}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <h3>操作审计</h3>
+  <ul class="audit">
+    {{range $D.Audits}}
+    <li><span class="mono small">{{timefmt .At}}</span> <b>{{.Actor}}</b> {{.Action}} <span class="small">{{.Detail}}</span></li>
+    {{end}}
+    {{if not $D.Audits}}<li class="empty">无审计记录</li>{{end}}
+  </ul>
+</section>
+{{end}}

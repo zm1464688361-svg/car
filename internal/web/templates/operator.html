@@ -1,0 +1,120 @@
+{{define "content"}}
+<h2>发布运营工作台</h2>
+
+<section class="panel">
+  <h3>已批准 —— 选择恰好 2 台车发起试点</h3>
+  {{if not .Data.Approved}}<p class="empty">无待试点活动。</p>{{end}}
+  {{range .Data.Approved}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span><span class="mono">目标 {{.Interval}}s</span>{{.Reason}}</div>
+    <form method="post" action="/actions/pilot">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <div class="veh-pick">
+        {{range .Data.Vehicles}}
+        <label class="pick {{if not .Online}}off{{end}}">
+          <input type="checkbox" name="vehicle" value="{{.ID}}"> {{.ID}} {{if not .Online}}<em>离线</em>{{end}}
+        </label>
+        {{end}}
+      </div>
+      <button class="btn primary sm" type="submit">下发试点（2 台）</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>试点中 —— 两台试点均成功后才可确认推广</h3>
+  {{if not .Data.Piloting}}<p class="empty">无试点中的活动。</p>{{end}}
+  {{range .Data.Piloting}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span>
+      <span class="mono">试点 {{range .PilotIDs}}{{.}} {{end}}</span>
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a></div>
+    <form method="post" action="/actions/expand" class="inline">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <button class="btn primary sm" type="submit">确认推广至剩余 3 台</button>
+    </form>
+    <form method="post" action="/actions/stop" class="inline grow">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <input name="reason" placeholder="停止原因（必填）" required>
+      <button class="btn danger sm" type="submit">停止活动</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>试点暂停 —— 可停止活动</h3>
+  {{if not .Data.Paused}}<p class="empty">无试点暂停的活动。</p>{{end}}
+  {{range .Data.Paused}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span>
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a></div>
+    <form method="post" action="/actions/stop" class="inline grow">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <input name="reason" placeholder="停止原因（必填）" required>
+      <button class="btn danger sm" type="submit">停止活动</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>推广中 —— 等待剩余车辆回执</h3>
+  {{if not .Data.Expanding}}<p class="empty">无推广中的活动。</p>{{end}}
+  {{range .Data.Expanding}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span>
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a></div>
+    <form method="post" action="/actions/stop" class="inline grow">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <input name="reason" placeholder="停止原因（必填）" required>
+      <button class="btn danger sm" type="submit">停止活动（阻止未下发部分）</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>已停止 —— 可发起恢复</h3>
+  {{if not .Data.Stopped}}<p class="empty">无已停止的活动。</p>{{end}}
+  {{range .Data.Stopped}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span><span class="chip st-{{.Status}}">{{act .Status}}</span>
+      {{if .StopReason}}<span class="warn-note">停止原因：{{.StopReason}}</span>{{end}}
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a></div>
+    <form method="post" action="/actions/request-restore" class="inline">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <button class="btn sm" type="submit">发起恢复（待负责人批准）</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>恢复已批 —— 执行恢复下发</h3>
+  {{if not .Data.RestoreApproved}}<p class="empty">无恢复已批的活动。</p>{{end}}
+  {{range .Data.RestoreApproved}}
+  <article class="act-row">
+    <div class="act-head"><span class="act-id">#{{.ID}}</span>
+      <a class="btn ghost sm" href="/activity/{{.ID}}">逐车核查</a></div>
+    <form method="post" action="/actions/execute-restore" class="inline">
+      <input type="hidden" name="id" value="{{.ID}}">
+      <button class="btn primary sm" type="submit">执行恢复（按各车活动前值下发新版本）</button>
+    </form>
+  </article>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>全部活动</h3>
+  {{range .Data.Activities}}
+  <div class="act-head slim">
+    <span class="act-id">#{{.ID}}</span>
+    <span class="chip st-{{.Status}}">{{act .Status}}</span>
+    <span class="mono">{{.Interval}}s</span>
+    <a class="btn ghost sm" href="/activity/{{.ID}}">核查</a>
+  </div>
+  {{end}}
+</section>
+{{end}}

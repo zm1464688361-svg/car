@@ -1,0 +1,41 @@
+{{define "base.html"}}<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<header class="topbar">
+  <div class="brand">
+    <span class="sig"></span>
+    <span class="brand-name">FLEET·LOG</span>
+    <span class="brand-sub">测试车队日志策略发布平台 / 题目09</span>
+  </div>
+  {{if .User}}
+  <nav class="nav">
+    {{if eq (printf "%s" .User.Role) "applicant"}}<a href="/applicant" class="on">我的申请</a>{{end}}
+    {{if eq (printf "%s" .User.Role) "approver"}}<a href="/approver" class="on">审批核查</a>{{end}}
+    {{if eq (printf "%s" .User.Role) "operator"}}<a href="/operator" class="on">发布运营</a><a href="/simulator">车辆模拟器</a>{{end}}
+    <a href="/activity" hidden></a>
+  </nav>
+  <div class="who">
+    <span class="who-name">{{.User.Name}}</span>
+    <span class="role-chip role-{{.User.Role}}">{{roleLabel .User.Role}}</span>
+    <form method="post" action="/logout" class="inline"><button class="btn ghost sm" type="submit">退出</button></form>
+  </div>
+  {{end}}
+</header>
+{{if .Timeout}}<div class="clockbar">教学时钟：回执超时判定 {{.Timeout}}（题面规定 60 秒，可用环境变量缩短用于演示）</div>{{end}}
+{{if .Flash.OK}}<div class="flash ok">{{.Flash.OK}}</div>{{end}}
+{{if .Flash.Err}}<div class="flash err">{{.Flash.Err}}</div>{{end}}
+<main class="wrap">
+{{template "content" .}}
+</main>
+<footer class="foot">Go 后端服务端渲染 · SQLite 持久化 · 所有身份由服务端会话校验，修改请求参数不能越权</footer>
+</body>
+</html>{{end}}

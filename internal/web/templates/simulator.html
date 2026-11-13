@@ -1,0 +1,70 @@
+{{define "content"}}
+<h2>车辆模拟器</h2>
+<p class="sub">模拟车端行为：拉取最新配置、上报成功/失败回执。真实测试也可直接调用 <code>/api/vehicle/ack</code>（Header X-Vehicle-Token）。</p>
+
+<section class="card-grid">
+  {{range .Data.Vehicles}}
+  <div class="card veh-card {{if .Online}}online{{else}}offline{{end}}">
+    <div class="veh-head">
+      <span class="veh-id">{{.ID}}</span>
+      <span class="sig-dot {{if .Online}}on{{end}}"></span>
+      <span class="small">{{if .Online}}在线{{else}}离线{{end}}</span>
+    </div>
+    <div class="veh-body mono">
+      <div>已生效间隔 <b>{{.CurrentInterval}}s</b></div>
+      <div>当前版本 v{{.CurrentVersion}}</div>
+      <div class="small">{{if .Baseline}}活动前值 {{.Baseline}}s{{else}}未参与下发{{end}}</div>
+    </div>
+    <div class="btn-row">
+      <form method="post" action="/sim/online" class="inline">
+        <input type="hidden" name="vehicle" value="{{.ID}}">
+        <input type="hidden" name="online" value="{{if .Online}}0{{else}}1{{end}}">
+        <button class="btn ghost sm" type="submit">{{if .Online}}切离线{{else}}切在线{{end}}</button>
+      </form>
+      <form method="post" action="/sim/pull" class="inline">
+        <input type="hidden" name="token" value="vtok-{{.ID}}">
+        <button class="btn sm" type="submit">拉取配置</button>
+      </form>
+      {{if gt .CurrentVersion 0}}
+      <form method="post" action="/sim/ack" class="inline">
+        <input type="hidden" name="token" value="vtok-{{.ID}}">
+        <input type="hidden" name="version" value="{{.CurrentVersion}}">
+        <input type="hidden" name="result" value="success">
+        <button class="btn primary sm" type="submit">上报成功</button>
+      </form>
+      <form method="post" action="/sim/ack" class="inline">
+        <input type="hidden" name="token" value="vtok-{{.ID}}">
+        <input type="hidden" name="version" value="{{.CurrentVersion}}">
+        <input type="hidden" name="result" value="failed">
+        <button class="btn danger sm" type="submit">上报失败</button>
+      </form>
+      {{end}}
+    </div>
+    <form method="post" action="/sim/ack" class="inline hack-row">
+      <input type="hidden" name="token" value="vtok-{{.ID}}">
+      <input class="num" name="version" placeholder="版本号" required>
+      <select name="result"><option value="success">success</option><option value="failed">failed</option></select>
+      <button class="btn ghost sm" type="submit">自定义回执（测旧版本/未知版本）</button>
+    </form>
+    <div class="token-hint small">令牌：vtok-{{.ID}}</div>
+  </div>
+  {{end}}
+</section>
+
+<section class="panel">
+  <h3>最近回执与拒绝记录</h3>
+  <table class="tbl">
+    <thead><tr><th>车辆</th><th>版本</th><th>结果</th><th>处理</th><th>代码</th><th>说明</th><th>时间</th></tr></thead>
+    <tbody>
+      {{range .Data.Receipts}}
+      <tr class="{{if .Accepted}}acc{{else}}rej{{end}}">
+        <td class="mono">{{.VehicleID}}</td><td class="mono">v{{.Version}}</td><td class="mono">{{.Result}}</td>
+        <td>{{if .Accepted}}受理{{else}}<span class="chip ps-failed">拒绝</span>{{end}}</td>
+        <td class="mono small">{{.Code}}</td><td class="small">{{.Note}}</td><td class="mono small">{{timefmt .At}}</td>
+      </tr>
+      {{end}}
+      {{if not .Data.Receipts}}<tr><td colspan="7" class="empty">无记录</td></tr>{{end}}
+    </tbody>
+  </table>
+</section>
+{{end}}
