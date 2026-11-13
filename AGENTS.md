@@ -2,6 +2,13 @@
 
 本文件是本题的 AI 行为约束，开发开始前编写，开发过程中实际生效。业务规则以 `.agent/Go项目业务场景题.md` 题目09 及第一部分共同要求为准。
 
+## 0. 项目概述与环境准备
+
+- 项目：车队日志策略发布平台（题目09），Go + SQLite 单体服务，后端完成前端（服务端渲染，无 JS 框架）。
+- 环境：Go 1.25+（见 `go.mod`）；依赖已记录在 `go.sum`，无需手动安装其他组件。
+- 首次获取代码后直接执行下方构建/测试命令即可，依赖由 `go` 工具自动下载。
+- 目录结构：`cmd/server`（入口）、`internal/{model,store,service,web}`、`docs/`（需求/任务/假设）、`.agent/`（原始题面）。
+
 ## 1. 角色与职责边界
 
 | 角色 | 职责 | 可修改范围 | 交接材料 | 需学生确认 |
@@ -18,6 +25,20 @@
 - 不做真实车载协议、固件升级、复杂策略条件、车队管理；车辆用 HTTP 模拟。
 - 不做注册登录全套流程：账号预置，但服务端必须校验身份，禁止通过改请求参数越权。
 - 数据库使用 SQLite（纯 Go 驱动 modernc.org/sqlite，便于教学环境与单测），理由：零部署依赖、事务完整、重启后数据可查。
+
+## 2.1 开发与验证命令
+
+```bash
+go run ./cmd/server          # 启动：默认 http://localhost:8080，DB=data.db
+go build ./...               # 编译
+go vet ./...                 # 静态检查
+gofmt -l .                   # 格式检查（应无输出）
+go test -cover ./...         # 单测 + 覆盖率
+go test -race -cover ./...   # 竞争检测（CI/Linux 上执行）
+```
+
+- 目录：`cmd/server` 入口装配；`internal/model` 领域模型；`internal/store` SQLite 迁移与预置；`internal/service` 业务规则；`internal/web` 服务端渲染页面 + 车端 API。
+- 运行环境变量：`DB_PATH`、`ADDR`、`SESSION_SECRET`、`ACK_TIMEOUT`（详见 README）。
 
 ## 3. Git 与提交规范
 
