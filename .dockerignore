@@ -1,0 +1,7 @@
+data.db
+*.db
+cover.out
+cover2*
+.git
+.agent
+docs
